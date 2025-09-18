@@ -89,7 +89,7 @@ class HelpCenterScreen extends StatelessWidget {
                   indicatorSize: TabBarIndicatorSize.tab, // Full tab width
                   dividerColor: Colors.transparent, // Remove default divider
                   splashFactory: NoSplash.splashFactory, // Remove splash effect
-                  overlayColor: MaterialStateProperty.all(Colors.transparent),
+                  overlayColor: WidgetStateProperty.all(Colors.transparent),
                   tabs: [
                     Container(
                       height: 42,

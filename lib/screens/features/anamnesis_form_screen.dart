@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AnamnesisFormScreen extends StatefulWidget {
+  const AnamnesisFormScreen({super.key});
+
   @override
   _AnamnesisFormScreenState createState() => _AnamnesisFormScreenState();
 }
@@ -77,12 +79,12 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
                       Navigator.pop(context, true); // Kirim sinyal bahwa data berhasil disimpan
                     }
                   },
-                  child: Text('Save Record', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFF39C12),
                     padding: EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   ),
+                  child: Text('Save Record', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
                 ),
               ),
             ],
