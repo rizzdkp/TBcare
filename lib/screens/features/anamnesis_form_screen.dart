@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/record_storage_service.dart';
 
 class AnamnesisFormScreen extends StatefulWidget {
   const AnamnesisFormScreen({super.key});
@@ -12,19 +13,57 @@ class AnamnesisFormScreen extends StatefulWidget {
 
 class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
   final _formKey = GlobalKey<FormState>();
+  final Map<String, TextEditingController> _controllers = {};
+
+  final List<String> _fields = [
+    'Sex (Male/Female)',
+    'Age',
+    'Height (cm)',
+    'Weight (Kg)',
+    'Cough Duration (<1wk, 1-2wks, etc.)',
+    'Productive Cough (Yes/No)',
+    'Hemoptysis (Yes/No)',
+    'Chest Pain (Yes/No)',
+    'Shortness of Breath (Yes/No)',
+    'Fever (Yes/No)',
+    'Night Sweats (Yes/No)',
+    'Weight Loss (Yes/No)',
+    'Tobacco Use (current/stopped/never)',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    for (String field in _fields) {
+      _controllers[field] = TextEditingController();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controllers.values.forEach((controller) => controller.dispose());
+    super.dispose();
+  }
 
   // Helper untuk membuat input field
   Widget _buildTextField(String label) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF00A8C5))),
+        Text(label,
+            style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF00A8C5))),
         SizedBox(height: 8),
         TextFormField(
+          controller: _controllers[label],
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.grey[100],
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -42,7 +81,9 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Record', style: GoogleFonts.poppins(color: Color(0xFF00A8C5), fontWeight: FontWeight.bold)),
+        title: Text('Add New Record',
+            style: GoogleFonts.poppins(
+                color: Color(0xFF00A8C5), fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: IconThemeData(color: Color(0xFF00A8C5)),
@@ -53,38 +94,39 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
           key: _formKey,
           child: Column(
             children: [
-              _buildTextField('Sex (Male/Female)'),
-              _buildTextField('Age'),
-              _buildTextField('Height (cm)'),
-              _buildTextField('Weight (Kg)'),
-              _buildTextField('Cough Duration (<1wk, 1-2wks, etc.)'),
-              _buildTextField('Productive Cough (Yes/No)'),
-              _buildTextField('Hemoptysis (Yes/No)'),
-              _buildTextField('Chest Pain (Yes/No)'),
-              _buildTextField('Shortness of Breath (Yes/No)'),
-              _buildTextField('Fever (Yes/No)'),
-              _buildTextField('Night Sweats (Yes/No)'),
-              _buildTextField('Weight Loss (Yes/No)'),
-              _buildTextField('Tobacco Use (current/stopped/never)'),
+              ..._fields.map((field) => _buildTextField(field)).toList(),
               SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // TODO: Logic to save data will be here
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Record Saved!')),
+                      // Create record
+                      final recordData = <String, String>{};
+                      _controllers.forEach((key, controller) {
+                        recordData[key] = controller.text;
+                      });
+
+                      final record = AnamnesisRecord(
+                        id: DateTime.now().millisecondsSinceEpoch.toString(),
+                        recordingDate: DateTime.now(),
+                        data: recordData,
                       );
-                      Navigator.pop(context, true); // Kirim sinyal bahwa data berhasil disimpan
+
+                      Navigator.pop(context, record);
                     }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFF39C12),
                     padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30)),
                   ),
-                  child: Text('Save Record', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
+                  child: Text('Save Record',
+                      style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.white)),
                 ),
               ),
             ],

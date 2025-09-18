@@ -2,9 +2,63 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/record_storage_service.dart';
 
-class NotifikasiScreen extends StatelessWidget {
+class NotifikasiScreen extends StatefulWidget {
   const NotifikasiScreen({super.key});
+
+  @override
+  _NotifikasiScreenState createState() => _NotifikasiScreenState();
+}
+
+class _NotifikasiScreenState extends State<NotifikasiScreen> {
+  List<NotificationItem> notifications = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotifications();
+    RecordStorageService.addListener(_onNotificationsChanged);
+    
+    // Mark all notifications as read when screen is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _markAllAsRead();
+    });
+  }
+
+  void _markAllAsRead() {
+    final unreadNotifications = RecordStorageService.getAllNotifications()
+        .where((notif) => !notif.isRead)
+        .toList();
+    
+    print('🔴 Marking ${unreadNotifications.length} notifications as read');
+    
+    for (final notif in unreadNotifications) {
+      RecordStorageService.markNotificationAsRead(notif.id);
+    }
+    
+    if (unreadNotifications.isNotEmpty) {
+      print('✅ All notifications marked as read');
+    }
+  }
+
+  @override
+  void dispose() {
+    RecordStorageService.removeListener(_onNotificationsChanged);
+    super.dispose();
+  }
+
+  void _loadNotifications() {
+    if (mounted) {
+      setState(() {
+        notifications = RecordStorageService.getAllNotifications();
+      });
+    }
+  }
+
+  void _onNotificationsChanged() {
+    _loadNotifications();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,60 +77,94 @@ class NotifikasiScreen extends StatelessWidget {
         ),
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDateSection('Today'),
-            SizedBox(height: 16),
-            _buildNotificationItem(
-              'Hasilmu Sudah Keluar',
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-              '2 M',
-              Color.fromARGB(255, 197, 0, 0),
-              Icons.medical_services,
+      body: notifications.isEmpty
+          ? _buildEmptyState()
+          : SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _buildNotificationSections(),
+              ),
             ),
-            SizedBox(height: 12),
-            _buildNotificationItem(
-              'Hasilmu Sudah Keluar',
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-              '2 H',
-              Color(0xFFF39C12),
-              Icons.medical_services,
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.notifications_off, size: 100, color: Colors.grey[300]),
+          SizedBox(height: 20),
+          Text(
+            'Tidak ada notifikasi',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[600],
             ),
-            SizedBox(height: 12),
-            _buildNotificationItem(
-              'Hasilmu Sudah Keluar',
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.',
-              '3 H',
-              Color(0xFF4CAF50),
-              Icons.medical_services,
-            ),
-            SizedBox(height: 24),
-            _buildDateSection('Yesterday'),
-            SizedBox(height: 16),
-            _buildNotificationItem(
-              'Record Saved',
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod aliqua.',
-              '1 D',
-              Color(0xFFF39C12),
-              Icons.save_alt,
-            ),
-            SizedBox(height: 24),
-            _buildDateSection('15 April'),
-            SizedBox(height: 16),
-            _buildNotificationItem(
-              'Record Saved',
-              'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod aliqua.',
-              '5 D',
-              Color(0xFFF39C12),
-              Icons.save_alt,
-            ),
-          ],
-        ),
+          ),
+          SizedBox(height: 10),
+          Text(
+            'Notifikasi akan muncul di sini ketika ada aktivitas baru',
+            style: GoogleFonts.poppins(color: Colors.grey[500]),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
+  }
+
+  List<Widget> _buildNotificationSections() {
+    if (notifications.isEmpty) return [];
+
+    final now = DateTime.now();
+    final today = <NotificationItem>[];
+    final yesterday = <NotificationItem>[];
+    final older = <NotificationItem>[];
+
+    for (final notification in notifications) {
+      if (notification.time.contains('M') || notification.time.contains('H') || notification.time == 'Baru saja') {
+        today.add(notification);
+      } else if (notification.time == '1 D') {
+        yesterday.add(notification);
+      } else {
+        older.add(notification);
+      }
+    }
+
+    final sections = <Widget>[];
+
+    if (today.isNotEmpty) {
+      sections.add(_buildDateSection('Today'));
+      sections.add(SizedBox(height: 16));
+      today.forEach((notification) {
+        sections.add(_buildNotificationItem(notification));
+        sections.add(SizedBox(height: 12));
+      });
+      sections.add(SizedBox(height: 12));
+    }
+
+    if (yesterday.isNotEmpty) {
+      sections.add(_buildDateSection('Yesterday'));
+      sections.add(SizedBox(height: 16));
+      yesterday.forEach((notification) {
+        sections.add(_buildNotificationItem(notification));
+        sections.add(SizedBox(height: 12));
+      });
+      sections.add(SizedBox(height: 12));
+    }
+
+    if (older.isNotEmpty) {
+      sections.add(_buildDateSection('Earlier'));
+      sections.add(SizedBox(height: 16));
+      older.forEach((notification) {
+        sections.add(_buildNotificationItem(notification));
+        sections.add(SizedBox(height: 12));
+      });
+    }
+
+    return sections;
   }
 
   Widget _buildDateSection(String date) {
@@ -97,13 +185,24 @@ class NotifikasiScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationItem(
-    String title,
-    String description,
-    String time,
-    Color titleColor,
-    IconData icon,
-  ) {
+  Widget _buildNotificationItem(NotificationItem notification) {
+    Color titleColor;
+    IconData iconData;
+
+    switch (notification.type) {
+      case NotificationType.recordSaved:
+        titleColor = Color(0xFF4CAF50);
+        iconData = Icons.save_alt;
+        break;
+      case NotificationType.recordDeleted:
+        titleColor = Colors.red;
+        iconData = Icons.delete_outline;
+        break;
+      default:
+        titleColor = Color(0xFFF39C12);
+        iconData = Icons.medical_services;
+    }
+
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -123,10 +222,10 @@ class NotifikasiScreen extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Color(0xFF00A8C5), // Same color for all icons
+              color: Color(0xFF00A8C5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.white, size: 24),
+            child: Icon(iconData, color: Colors.white, size: 24),
           ),
           SizedBox(width: 16),
           Expanded(
@@ -136,16 +235,18 @@ class NotifikasiScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      title,
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: titleColor, // Color applied to title text
+                    Expanded(
+                      child: Text(
+                        notification.title,
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: titleColor,
+                        ),
                       ),
                     ),
                     Text(
-                      time,
+                      notification.time,
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -155,7 +256,7 @@ class NotifikasiScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  description,
+                  notification.description,
                   style: GoogleFonts.poppins(
                     fontSize: 12,
                     color: Colors.grey[600],

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../features/anamnesis_form_screen.dart';
+import '../../services/record_storage_service.dart';
 
 class AnalysisScreen extends StatefulWidget {
   const AnalysisScreen({super.key});
@@ -12,8 +13,30 @@ class AnalysisScreen extends StatefulWidget {
 }
 
 class _AnalysisScreenState extends State<AnalysisScreen> {
-  // Untuk simulasi, kita gunakan list sederhana. Nanti ini bisa diganti database.
-  List<String> records = [];
+  List<AnamnesisRecord> records = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecords();
+    RecordStorageService.addListener(_onRecordsChanged);
+  }
+
+  @override
+  void dispose() {
+    RecordStorageService.removeListener(_onRecordsChanged);
+    super.dispose();
+  }
+
+  void _loadRecords() {
+    setState(() {
+      records = RecordStorageService.getAllRecords();
+    });
+  }
+
+  void _onRecordsChanged() {
+    _loadRecords();
+  }
 
   void _navigateAndAddRecord(BuildContext context) async {
     final result = await Navigator.push(
@@ -21,13 +44,58 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       MaterialPageRoute(builder: (context) => AnamnesisFormScreen()),
     );
 
-    if (result == true) {
-      setState(() {
-        // Tambah data dummy ke list dan kirim notifikasi
-        records.add("Record saved on ${DateTime.now()}");
-        // TODO: Panggil service notifikasi di sini
-      });
+    if (result is AnamnesisRecord) {
+      RecordStorageService.addRecord(result);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Record berhasil disimpan!'),
+          backgroundColor: Colors.green,
+        ),
+      );
     }
+  }
+
+  void _deleteRecord(String recordId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Hapus Record',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            'Apakah Anda yakin ingin menghapus record ini?',
+            style: GoogleFonts.poppins(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Batal',
+                style: GoogleFonts.poppins(color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                RecordStorageService.deleteRecord(recordId);
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Record berhasil dihapus!'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              },
+              child: Text(
+                'Hapus',
+                style: GoogleFonts.poppins(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -43,9 +111,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        automaticallyImplyLeading: false, // This removes the back button
+        automaticallyImplyLeading: false,
         actions: [
-          // Tombol Tambah Data hanya muncul jika sudah ada data
           if (records.isNotEmpty)
             IconButton(
               icon: Icon(Icons.add_circle, color: Color(0xFFF39C12), size: 30),
@@ -96,24 +163,84 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
       padding: EdgeInsets.all(16),
       itemCount: records.length,
       itemBuilder: (context, index) {
+        final record = records[index];
         return Card(
           margin: EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: Icon(Icons.receipt_long, color: Color(0xFF00A8C5)),
-            title: Text('Anamnesis Record #${index + 1}',
+            title: Text('Anamnesis Record #${records.length - index}',
                 style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-            subtitle: Text(records[index]),
+            subtitle: Text(
+              'Dibuat: ${_formatDate(record.recordingDate)}',
+              style: GoogleFonts.poppins(fontSize: 12),
+            ),
             trailing: IconButton(
               icon: Icon(Icons.delete_outline, color: Colors.red),
-              onPressed: () {
-                setState(() {
-                  records.removeAt(index);
-                });
-              },
+              onPressed: () => _deleteRecord(record.id),
             ),
+            onTap: () {
+              _showRecordDetails(record);
+            },
           ),
         );
       },
     );
+  }
+
+  void _showRecordDetails(AnamnesisRecord record) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            'Detail Record',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: record.data.entries.map((entry) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Text(
+                          '${entry.key}:',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF00A8C5),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          entry.value,
+                          style: GoogleFonts.poppins(),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Tutup', style: GoogleFonts.poppins()),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
   }
 }

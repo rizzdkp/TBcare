@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/news_article_model.dart';
 import '../../services/news_api_service.dart';
+import '../../services/record_storage_service.dart';
 import '../features/notifikasi_screen.dart';
 import '../features/settings_screen.dart'; // Import SettingsScreen
 import 'analysis_screen.dart';
@@ -19,11 +20,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  static const int _initialPage = 1000;
-  final PageController _pageController = PageController(
-    initialPage: _initialPage,
-  );
+  late PageController _pageController;
   Timer? _timer;
+  int _currentPage = 0;
+  int _notificationCount = 0; // Tambahkan ini
   late Future<List<NewsArticle>> _newsFuture;
 
   final List<Map<String, String>> _bannerData = [
@@ -54,15 +54,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: 5000);
+    _startAutoSlide();
     _newsFuture = NewsApiService.fetchHealthNews();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _startBannerAutoScroll();
-      }
-    });
+    
+    // Initialize sample notifications
+    RecordStorageService.addSampleNotifications();
+    
+    // Listen to notification changes
+    RecordStorageService.addListener(_updateNotificationCount);
+    _updateNotificationCount();
   }
 
-  void _startBannerAutoScroll() {
+  void _startAutoSlide() {
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (_pageController.hasClients) {
         _pageController.nextPage(
@@ -77,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _timer?.cancel();
     _pageController.dispose();
+    RecordStorageService.removeListener(_updateNotificationCount);
     super.dispose();
   }
 
@@ -88,6 +93,21 @@ class _HomeScreenState extends State<HomeScreen> {
           SnackBar(content: Text('Tidak bisa membuka link: $urlString')),
         );
       }
+    }
+  }
+
+  // Update method _updateNotificationCount
+  void _updateNotificationCount() {
+    if (mounted) {
+      final newCount = RecordStorageService.getAllNotifications()
+          .where((notif) => !notif.isRead)
+          .length;
+      
+      print('🔵 Updating notification count: $_notificationCount -> $newCount');
+      
+      setState(() {
+        _notificationCount = newCount;
+      });
     }
   }
 
@@ -118,15 +138,49 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Row(
             children: [
-              _buildHeaderIcon(Icons.notifications_none, () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const NotifikasiScreen()),
-                );
-              }),
+              // Notification icon with badge
+              Stack(
+                children: [
+                  _buildHeaderIcon(Icons.notifications_none, () async {
+                    print('🔔 Opening notification screen');
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const NotifikasiScreen()),
+                    );
+                    // Refresh notification count when returning from notification screen
+                    print('🔙 Returned from notification screen, updating count');
+                    _updateNotificationCount();
+                  }),
+                  // Badge for notification count
+                  if (_notificationCount > 0)
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: 20,
+                          minHeight: 20,
+                        ),
+                        child: Text(
+                          '$_notificationCount',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               const SizedBox(width: 8),
               _buildHeaderIcon(Icons.settings, () {
-                // Navigate to SettingsScreen when settings icon is pressed
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const SettingsScreen()),
