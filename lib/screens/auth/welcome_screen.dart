@@ -17,17 +17,17 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Spacer(),
+              const Spacer(),
               Text(
                 'TBCare',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
-                  color: Color(0xFF00A8C5),
+                  color: const Color(0xFF00A8C5),
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 'Aplikasi skrining awal TBC berbasis suara batuk. Mari jaga kesehatan paru-paru kita bersama.',
                 textAlign: TextAlign.center,
@@ -36,14 +36,14 @@ class WelcomeScreen extends StatelessWidget {
                   fontSize: 14,
                 ),
               ),
-              Spacer(flex: 2),
+              const Spacer(flex: 2),
               ElevatedButton(
                 onPressed: () => Navigator.of(
                   context,
-                ).push(MaterialPageRoute(builder: (_) => LoginScreen())),
+                ).push(MaterialPageRoute(builder: (_) => const LoginScreen())),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF1CB5E0),
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFF1CB5E0),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -57,14 +57,14 @@ class WelcomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => Navigator.of(
                   context,
-                ).push(MaterialPageRoute(builder: (_) => SignUpScreen())),
+                ).push(MaterialPageRoute(builder: (_) => const SignUpScreen())),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFF39C12),
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFFF39C12),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

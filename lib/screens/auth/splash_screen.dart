@@ -14,17 +14,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 3), () {
       Navigator.of(
         context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => WelcomeScreen()));
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const WelcomeScreen()));
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF1CB5E0),
+      backgroundColor: const Color(0xFF1CB5E0),
       body: Center(
         child: Text(
           'TBCare',

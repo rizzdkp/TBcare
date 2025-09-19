@@ -41,7 +41,9 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
 
   @override
   void dispose() {
-    _controllers.values.forEach((controller) => controller.dispose());
+    for (var controller in _controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -54,8 +56,8 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
             style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF00A8C5))),
-        SizedBox(height: 8),
+                color: const Color(0xFF00A8C5))),
+        const SizedBox(height: 8),
         TextFormField(
           controller: _controllers[label],
           decoration: InputDecoration(
@@ -72,7 +74,7 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
             return null;
           },
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -83,10 +85,10 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
       appBar: AppBar(
         title: Text('Add New Record',
             style: GoogleFonts.poppins(
-                color: Color(0xFF00A8C5), fontWeight: FontWeight.bold)),
+                color: const Color(0xFF00A8C5), fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Color(0xFF00A8C5)),
+        iconTheme: const IconThemeData(color: Color(0xFF00A8C5)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -94,8 +96,8 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
           key: _formKey,
           child: Column(
             children: [
-              ..._fields.map((field) => _buildTextField(field)).toList(),
-              SizedBox(height: 40),
+              ..._fields.map((field) => _buildTextField(field)),
+              const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -117,8 +119,8 @@ class _AnamnesisFormScreenState extends State<AnamnesisFormScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF39C12),
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: const Color(0xFFF39C12),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
                   ),

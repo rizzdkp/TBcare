@@ -2,6 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'notification_setting_screen.dart';
+import 'privacy_policy_screen.dart';
+import 'password_manager_screen.dart';
+import 'help_center_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -9,75 +13,98 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF4F6F8),
+      backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
-        backgroundColor: Color(0xFF00A8C5),
+        backgroundColor: const Color(0xFF00A8C5),
         foregroundColor: Colors.white,
         title: Text(
           'Settings',
           style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
       ),
       body: ListView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         children: [
+          // Account Security Section
+          _buildSectionHeader('Account Security'),
           _buildSettingCard(
-            'Account',
-            'Manage your account settings',
-            Icons.person_outline,
-            () {},
+            'Password Manager',
+            'Change your password and security settings',
+            Icons.lock_outline,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const PasswordManagerScreen()),
+              );
+            },
           ),
-          SizedBox(height: 12),
+
+          const SizedBox(height: 24),
+
+          // App Settings Section
+          _buildSectionHeader('App Preferences'),
           _buildSettingCard(
-            'Notifications',
-            'Manage notification preferences',
-            Icons.notifications_none_outlined,
-            () {},
+            'Notification Settings',
+            'Manage your notification preferences',
+            Icons.notifications_outlined,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => const NotificationSettingScreen()),
+              );
+            },
           ),
-          SizedBox(height: 12),
           _buildSettingCard(
             'Privacy & Security',
-            'Control your privacy settings',
+            'Control your privacy and data settings',
             Icons.security_outlined,
-            () {},
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()),
+              );
+            },
           ),
-          SizedBox(height: 12),
-          _buildSettingCard(
-            'Language',
-            'Change app language',
-            Icons.language_outlined,
-            () {},
-          ),
-          SizedBox(height: 12),
+
+          const SizedBox(height: 24),
+
+          // Support Section
+          _buildSectionHeader('Support & Information'),
           _buildSettingCard(
             'Help & Support',
-            'Get help and contact support',
+            'Get help and contact support team',
             Icons.help_outline,
-            () {},
-          ),
-          SizedBox(height: 12),
-          _buildSettingCard(
-            'About',
-            'App version and information',
-            Icons.info_outline,
-            () {},
-          ),
-          SizedBox(height: 12),
-          _buildSettingCard(
-            'Logout',
-            'Sign out of your account',
-            Icons.logout,
             () {
-              _showLogoutDialog(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HelpCenterScreen()),
+              );
             },
-            isDestructive: true,
           ),
+
+          // Removed logout section - now only available in Profile
         ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12, left: 4),
+      child: Text(
+        title,
+        style: GoogleFonts.poppins(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF00A8C5),
+        ),
       ),
     );
   }
@@ -86,10 +113,10 @@ class SettingsScreen extends StatelessWidget {
     String title,
     String subtitle,
     IconData icon,
-    VoidCallback onTap, {
-    bool isDestructive = false,
-  }) {
+    VoidCallback onTap,
+  ) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -97,30 +124,25 @@ class SettingsScreen extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: ListTile(
         leading: Container(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: isDestructive
-                ? Colors.red.withOpacity(0.1)
-                : Color(0xFF00A8C5).withOpacity(0.1),
+            color: const Color(0xFF00A8C5).withOpacity(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: isDestructive ? Colors.red : Color(0xFF00A8C5),
-          ),
+          child: Icon(icon, color: const Color(0xFF00A8C5)),
         ),
         title: Text(
           title,
           style: GoogleFonts.poppins(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: isDestructive ? Colors.red : Colors.black87,
+            color: Colors.black87,
           ),
         ),
         subtitle: Text(
@@ -131,46 +153,6 @@ class SettingsScreen extends StatelessWidget {
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            'Logout',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-          ),
-          content: Text(
-            'Are you sure you want to logout?',
-            style: GoogleFonts.poppins(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancel',
-                style: GoogleFonts.poppins(color: Colors.grey),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Add logout functionality here
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Logged out successfully')),
-                );
-              },
-              child: Text(
-                'Logout',
-                style: GoogleFonts.poppins(color: Colors.red),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pkm/services/user_data_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/news_article_model.dart';
 import '../../services/news_api_service.dart';
@@ -22,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late PageController _pageController;
   Timer? _timer;
-  int _currentPage = 0;
+  final int _currentPage = 0;
   int _notificationCount = 0; // Tambahkan ini
   late Future<List<NewsArticle>> _newsFuture;
 
@@ -32,22 +33,21 @@ class _HomeScreenState extends State<HomeScreen> {
       'subtitle':
           'Lakukan Skrining Awal TBC Dengan Menganalisis Suara Batuk Anda Di Sini.',
       'buttonText': 'Cek Kondisi Anda',
-      'backgroundImage': 'assets/images/banner 1.jpg', 
+      'backgroundImage': 'assets/images/banner 1.jpg',
     },
     {
       'title': 'Jaga Kesehatan Paru-paru Anda.',
       'subtitle':
           'Ketahui cara menjaga paru-paru tetap sehat dan terhindar dari berbagai penyakit.',
       'buttonText': 'Lihat Tips Sehat',
-      'backgroundImage': 'assets/images/image.png', 
+      'backgroundImage': 'assets/images/image.png',
     },
     {
       'title': 'Pentingnya Deteksi Dini TBC',
       'subtitle':
           'Semakin cepat terdeteksi, semakin besar peluang untuk sembuh total.',
       'buttonText': 'Pelajari Lebih Lanjut',
-      'backgroundImage':
-          'assets/images/banner3.jpg', 
+      'backgroundImage': 'assets/images/banner3.jpg',
     },
   ];
 
@@ -57,10 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _pageController = PageController(initialPage: 5000);
     _startAutoSlide();
     _newsFuture = NewsApiService.fetchHealthNews();
-    
+
     // Initialize sample notifications
     RecordStorageService.addSampleNotifications();
-    
+
     // Listen to notification changes
     RecordStorageService.addListener(_updateNotificationCount);
     _updateNotificationCount();
@@ -102,9 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
       final newCount = RecordStorageService.getAllNotifications()
           .where((notif) => !notif.isRead)
           .length;
-      
+
       print('🔵 Updating notification count: $_notificationCount -> $newCount');
-      
+
       setState(() {
         _notificationCount = newCount;
       });
@@ -145,10 +145,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     print('🔔 Opening notification screen');
                     await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const NotifikasiScreen()),
+                      MaterialPageRoute(
+                          builder: (_) => const NotifikasiScreen()),
                     );
                     // Refresh notification count when returning from notification screen
-                    print('🔙 Returned from notification screen, updating count');
+                    print(
+                        '🔙 Returned from notification screen, updating count');
                     _updateNotificationCount();
                   }),
                   // Badge for notification count
@@ -157,18 +159,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       right: 0,
                       top: 0,
                       child: Container(
-                        padding: EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        constraints: BoxConstraints(
+                        constraints: const BoxConstraints(
                           minWidth: 20,
                           minHeight: 20,
                         ),
                         child: Text(
                           '$_notificationCount',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -201,7 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Text(
-                    'Jane Doe',
+                    UserDataService.fullName
+                        .split(' ')[0], // Ambil nama depan saja
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -271,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBannerSlider() {
-    return Container(
+    return SizedBox(
       height: 280, // Increased height to prevent overflow
       child: Stack(
         children: [
@@ -287,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (dataIndex == 0) {
                 onButtonPressed = () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => AnalysisScreen()),
+                      MaterialPageRoute(builder: (_) => const AnalysisScreen()),
                     );
               } else if (dataIndex == 2) {
                 onButtonPressed = () => _launchURL(
@@ -308,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 subtitle: item['subtitle']!,
                 buttonText: item['buttonText']!,
                 onButtonPressed: onButtonPressed,
-                backgroundImage: item['backgroundImage'], // Add this line
+                backgroundImage: item['backgroundImage'],
               );
             },
           ),
@@ -319,13 +322,13 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: 0,
             child: Center(
               child: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.chevron_left,
-                  color: Color(0xFFF8A549), // Your requested color
+                  color: Color(0xFFF8A549),
                   size: 32,
                 ),
                 onPressed: () => _pageController.previousPage(
-                  duration: Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOut,
                 ),
                 splashRadius: 25,
@@ -339,13 +342,13 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: 0,
             child: Center(
               child: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.chevron_right,
                   color: Color(0xFFF8A549), // Your requested color
                   size: 32,
                 ),
                 onPressed: () => _pageController.nextPage(
-                  duration: Duration(milliseconds: 400),
+                  duration: const Duration(milliseconds: 400),
                   curve: Curves.easeInOut,
                 ),
                 splashRadius: 25,
@@ -435,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
-                      stops: [0.0, 0.3, 0.7, 1.0],
+                      stops: const [0.0, 0.3, 0.7, 1.0],
                     ),
                   ),
                 ),

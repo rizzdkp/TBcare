@@ -19,10 +19,10 @@ class _MainScreenState extends State<MainScreen> {
 
   // Daftar halaman yang akan ditampilkan, sekarang dengan AnalysisScreen
   final List<Widget> _pages = [
-    HomeScreen(),
-    AnalysisScreen(), // <-- Placeholder sudah diganti
-    HistoriScreen(),
-    MyProfileScreen(),
+    const HomeScreen(),
+    const AnalysisScreen(), // <-- Placeholder sudah diganti
+    const HistoriScreen(),
+    const MyProfileScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -37,12 +37,12 @@ class _MainScreenState extends State<MainScreen> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Color(0xFFE9F6FE), // Changed to light blue color
+          color: const Color(0xFFE9F6FE), // Changed to light blue color
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 10,
-              offset: Offset(0, -2),
+              offset: const Offset(0, -2),
             ),
           ],
         ),
@@ -70,17 +70,17 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ],
           currentIndex: _selectedIndex,
-          selectedItemColor: Color(0xFFF39C12), // Orange for selected
-          unselectedItemColor: Color.fromARGB(255, 35, 128, 154), // Changed to grey for better contrast on light background
+          selectedItemColor: const Color(0xFFF39C12), // Orange for selected
+          unselectedItemColor: const Color.fromARGB(255, 35, 128, 154), // Changed to grey for better contrast on light background
           backgroundColor: Colors.transparent, // Keep transparent
           elevation: 0,
           type: BottomNavigationBarType.fixed,
           onTap: _onItemTapped,
-          selectedLabelStyle: TextStyle(
+          selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 12,
           ),
-          unselectedLabelStyle: TextStyle(
+          unselectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.normal,
             fontSize: 11,
           ),

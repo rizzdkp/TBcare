@@ -41,13 +41,13 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   void _navigateAndAddRecord(BuildContext context) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AnamnesisFormScreen()),
+      MaterialPageRoute(builder: (context) => const AnamnesisFormScreen()),
     );
 
     if (result is AnamnesisRecord) {
       RecordStorageService.addRecord(result);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Record berhasil disimpan!'),
           backgroundColor: Colors.green,
         ),
@@ -81,7 +81,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                 RecordStorageService.deleteRecord(recordId);
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content: Text('Record berhasil dihapus!'),
                     backgroundColor: Colors.red,
                   ),
@@ -105,7 +105,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         title: Text(
           'Analysis',
           style: GoogleFonts.poppins(
-            color: Color(0xFF00A8C5),
+            color: const Color(0xFF00A8C5),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -115,7 +115,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         actions: [
           if (records.isNotEmpty)
             IconButton(
-              icon: Icon(Icons.add_circle, color: Color(0xFFF39C12), size: 30),
+              icon: const Icon(Icons.add_circle, color: Color(0xFFF39C12), size: 30),
               onPressed: () => _navigateAndAddRecord(context),
             )
         ],
@@ -130,25 +130,25 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.folder_off_outlined, size: 100, color: Colors.grey[300]),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text('No Records Found',
               style: GoogleFonts.poppins(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey[600])),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text('Add your first health record to begin analysis.',
               style: GoogleFonts.poppins(color: Colors.grey[500])),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           ElevatedButton.icon(
-            icon: Icon(Icons.add, color: Colors.white),
+            icon: const Icon(Icons.add, color: Colors.white),
             label: Text('Add New Record',
                 style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold, color: Colors.white)),
             onPressed: () => _navigateAndAddRecord(context),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF1CB5E0),
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              backgroundColor: const Color(0xFF1CB5E0),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)),
             ),
@@ -160,14 +160,14 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   Widget _buildRecordList() {
     return ListView.builder(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       itemCount: records.length,
       itemBuilder: (context, index) {
         final record = records[index];
         return Card(
-          margin: EdgeInsets.only(bottom: 12),
+          margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
-            leading: Icon(Icons.receipt_long, color: Color(0xFF00A8C5)),
+            leading: const Icon(Icons.receipt_long, color: Color(0xFF00A8C5)),
             title: Text('Anamnesis Record #${records.length - index}',
                 style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
             subtitle: Text(
@@ -175,7 +175,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               style: GoogleFonts.poppins(fontSize: 12),
             ),
             trailing: IconButton(
-              icon: Icon(Icons.delete_outline, color: Colors.red),
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: () => _deleteRecord(record.id),
             ),
             onTap: () {
@@ -212,7 +212,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                           '${entry.key}:',
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF00A8C5),
+                            color: const Color(0xFF00A8C5),
                           ),
                         ),
                       ),

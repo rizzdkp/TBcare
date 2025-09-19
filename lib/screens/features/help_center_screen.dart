@@ -19,8 +19,8 @@ class HelpCenterScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Color(0xFF1CB5E0),
-          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: const Color(0xFF1CB5E0),
+          iconTheme: const IconThemeData(color: Colors.white),
           elevation: 0,
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
@@ -30,16 +30,16 @@ class HelpCenterScreen extends StatelessWidget {
                 fontSize: 16,
               ),
             ),
-            titlePadding: EdgeInsets.only(left: 20, bottom: 50),
+            titlePadding: const EdgeInsets.only(left: 20, bottom: 50),
           ),
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(100),
+            preferredSize: const Size.fromHeight(100),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Search...',
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -57,7 +57,7 @@ class HelpCenterScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Container(
                 height: 50, // Fixed height for consistent sizing
-                padding: EdgeInsets.all(4),
+                padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
                   color: Colors
@@ -77,12 +77,12 @@ class HelpCenterScreen extends StatelessWidget {
                   ),
                   indicator: BoxDecoration(
                     borderRadius: BorderRadius.circular(25),
-                    color: Color(0xFFF39C12), // Orange color when selected
+                    color: const Color(0xFFF39C12), // Orange color when selected
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0xFFF39C12).withOpacity(0.3),
+                        color: const Color(0xFFF39C12).withOpacity(0.3),
                         blurRadius: 8,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -94,12 +94,12 @@ class HelpCenterScreen extends StatelessWidget {
                     Container(
                       height: 42,
                       alignment: Alignment.center,
-                      child: Text('FAQ'),
+                      child: const Text('FAQ'),
                     ),
                     Container(
                       height: 42,
                       alignment: Alignment.center,
-                      child: Text('Contact Us'),
+                      child: const Text('Contact Us'),
                     ),
                   ],
                 ),
@@ -119,7 +119,7 @@ class HelpCenterScreen extends StatelessWidget {
   Widget _buildFaqTab() {
     // ... (kode FAQ tetap sama)
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
         _buildExpansionTile(
           'Apa itu TBCare?',
@@ -141,7 +141,7 @@ class HelpCenterScreen extends StatelessWidget {
     // ... (kode expansion tile tetap sama)
     return Card(
       elevation: 0,
-      margin: EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
         side: BorderSide(color: Colors.grey.shade200),
@@ -151,7 +151,7 @@ class HelpCenterScreen extends StatelessWidget {
           title,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
-            color: Color(0xFF00A8C5),
+            color: const Color(0xFF00A8C5),
           ),
         ),
         children: [
@@ -166,7 +166,7 @@ class HelpCenterScreen extends StatelessWidget {
 
   Widget _buildContactUsTab() {
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       children: [
         _buildContactItem(Icons.headset_mic_outlined, 'Customer Service'),
         _buildContactItem(Icons.public, 'Website'),
@@ -183,12 +183,12 @@ class HelpCenterScreen extends StatelessWidget {
     return Card(
       elevation: 0.5,
       shadowColor: Colors.grey.withOpacity(0.1),
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Color(0xFFF39C12).withOpacity(0.1),
-          child: Icon(icon, color: Color(0xFFF39C12)),
+          backgroundColor: const Color(0xFFF39C12).withOpacity(0.1),
+          child: Icon(icon, color: const Color(0xFFF39C12)),
         ),
         title: Text(
           title,
@@ -197,7 +197,7 @@ class HelpCenterScreen extends StatelessWidget {
             color: Colors.black87,
           ),
         ),
-        trailing: Icon(Icons.keyboard_arrow_down, color: Color(0xFFF39C12)),
+        trailing: const Icon(Icons.keyboard_arrow_down, color: Color(0xFFF39C12)),
         onTap: () {},
       ),
     );

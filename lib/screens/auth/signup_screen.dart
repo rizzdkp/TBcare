@@ -22,13 +22,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
         title: Text(
           'New Account',
           style: GoogleFonts.poppins(
-            color: Color(0xFF00A8C5),
+            color: const Color(0xFF00A8C5),
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Color(0xFF00A8C5)),
+        iconTheme: const IconThemeData(color: Color(0xFF00A8C5)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -40,26 +40,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
             _buildTextField('Email', 'example@example.com'),
             _buildTextField('Mobile Number', '08123456789'),
             _buildTextField('Date of Birth', 'DD / MM / YYYY'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Center(
               child: Text(
                 'By continuing, you agree to Terms of Use and Privacy Policy.',
                 style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
                   // TODO: Tambahkan logika sign up
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => LoginScreen()),
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFF39C12),
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFFF39C12),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -87,13 +87,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
           label,
           style: GoogleFonts.poppins(
             fontSize: 16,
-            color: Color(0xFF00A8C5),
+            color: const Color(0xFF00A8C5),
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextFormField(decoration: _inputDecoration(hint)),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }
@@ -106,11 +106,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'Password',
           style: GoogleFonts.poppins(
             fontSize: 16,
-            color: Color(0xFF00A8C5),
+            color: const Color(0xFF00A8C5),
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         TextFormField(
           obscureText: !_isPasswordVisible,
           decoration: _inputDecoration('**********').copyWith(
@@ -123,7 +123,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
       ],
     );
   }

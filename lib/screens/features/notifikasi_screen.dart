@@ -63,16 +63,16 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF4F6F8),
+      backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
-        backgroundColor: Color(0xFF00A8C5),
+        backgroundColor: const Color(0xFF00A8C5),
         foregroundColor: Colors.white,
         title: Text(
           'Notification',
           style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
@@ -80,7 +80,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       body: notifications.isEmpty
           ? _buildEmptyState()
           : SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: _buildNotificationSections(),
@@ -95,7 +95,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.notifications_off, size: 100, color: Colors.grey[300]),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             'Tidak ada notifikasi',
             style: GoogleFonts.poppins(
@@ -104,7 +104,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
               color: Colors.grey[600],
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             'Notifikasi akan muncul di sini ketika ada aktivitas baru',
             style: GoogleFonts.poppins(color: Colors.grey[500]),
@@ -137,31 +137,31 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
 
     if (today.isNotEmpty) {
       sections.add(_buildDateSection('Today'));
-      sections.add(SizedBox(height: 16));
-      today.forEach((notification) {
+      sections.add(const SizedBox(height: 16));
+      for (var notification in today) {
         sections.add(_buildNotificationItem(notification));
-        sections.add(SizedBox(height: 12));
-      });
-      sections.add(SizedBox(height: 12));
+        sections.add(const SizedBox(height: 12));
+      }
+      sections.add(const SizedBox(height: 12));
     }
 
     if (yesterday.isNotEmpty) {
       sections.add(_buildDateSection('Yesterday'));
-      sections.add(SizedBox(height: 16));
-      yesterday.forEach((notification) {
+      sections.add(const SizedBox(height: 16));
+      for (var notification in yesterday) {
         sections.add(_buildNotificationItem(notification));
-        sections.add(SizedBox(height: 12));
-      });
-      sections.add(SizedBox(height: 12));
+        sections.add(const SizedBox(height: 12));
+      }
+      sections.add(const SizedBox(height: 12));
     }
 
     if (older.isNotEmpty) {
       sections.add(_buildDateSection('Earlier'));
-      sections.add(SizedBox(height: 16));
-      older.forEach((notification) {
+      sections.add(const SizedBox(height: 16));
+      for (var notification in older) {
         sections.add(_buildNotificationItem(notification));
-        sections.add(SizedBox(height: 12));
-      });
+        sections.add(const SizedBox(height: 12));
+      }
     }
 
     return sections;
@@ -169,9 +169,9 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
 
   Widget _buildDateSection(String date) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Color(0xFF00A8C5),
+        color: const Color(0xFF00A8C5),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -191,7 +191,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
 
     switch (notification.type) {
       case NotificationType.recordSaved:
-        titleColor = Color(0xFF4CAF50);
+        titleColor = const Color(0xFF4CAF50);
         iconData = Icons.save_alt;
         break;
       case NotificationType.recordDeleted:
@@ -199,12 +199,12 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
         iconData = Icons.delete_outline;
         break;
       default:
-        titleColor = Color(0xFFF39C12);
+        titleColor = const Color(0xFFF39C12);
         iconData = Icons.medical_services;
     }
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -212,7 +212,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -220,14 +220,14 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Color(0xFF00A8C5),
+              color: const Color(0xFF00A8C5),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(iconData, color: Colors.white, size: 24),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +254,7 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   notification.description,
                   style: GoogleFonts.poppins(

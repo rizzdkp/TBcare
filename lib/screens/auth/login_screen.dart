@@ -20,13 +20,13 @@ class _LoginScreenState extends State<LoginScreen> {
         title: Text(
           'Hello!',
           style: GoogleFonts.poppins(
-            color: Color(0xFF00A8C5),
+            color: const Color(0xFF00A8C5),
             fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Color(0xFF00A8C5)),
+        iconTheme: const IconThemeData(color: Color(0xFF00A8C5)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -38,30 +38,30 @@ class _LoginScreenState extends State<LoginScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFF39C12),
+                color: const Color(0xFFF39C12),
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Text(
               'Email or Mobile Number',
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: Color(0xFF00A8C5),
+                color: const Color(0xFF00A8C5),
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             TextFormField(decoration: _inputDecoration('example@example.com')),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Password',
               style: GoogleFonts.poppins(
                 fontSize: 16,
-                color: Color(0xFF00A8C5),
+                color: const Color(0xFF00A8C5),
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             TextFormField(
               obscureText: !_isPasswordVisible,
               decoration: _inputDecoration('**********').copyWith(
@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -84,13 +84,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Navigasi ke MainScreen setelah login berhasil
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (_) => MainScreen(),
+                      builder: (_) => const MainScreen(),
                     ), // <-- Navigasi diperbaiki
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF1CB5E0),
-                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: const Color(0xFF1CB5E0),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

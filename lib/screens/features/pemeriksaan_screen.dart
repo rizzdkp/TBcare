@@ -10,18 +10,18 @@ class PemeriksaanScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pemeriksaan TBC'),
-        backgroundColor: Color(0xFF00A8C5),
+        title: const Text('Pemeriksaan TBC'),
+        backgroundColor: const Color(0xFF00A8C5),
         foregroundColor: Colors.white,
       ),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.medical_services, size: 100, color: Color(0xFF00A8C5)),
-              SizedBox(height: 20),
+              const Icon(Icons.medical_services, size: 100, color: Color(0xFF00A8C5)),
+              const SizedBox(height: 20),
               Text(
                 'Pemeriksaan TBC',
                 style: GoogleFonts.poppins(
@@ -29,7 +29,7 @@ class PemeriksaanScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Fitur pemeriksaan akan segera tersedia',
                 style: GoogleFonts.poppins(fontSize: 16),

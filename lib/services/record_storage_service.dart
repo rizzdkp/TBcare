@@ -21,7 +21,7 @@ class RecordStorageService {
         0,
         NotificationItem(
           id: record.id,
-          title: 'Hasilmu Sudah Keluar',
+          title: 'Record Disimpan',
           description:
               'Record anamnesis baru telah disimpan dengan ID: ${record.id}',
           time: _getTimeAgo(record.recordingDate),
@@ -62,10 +62,10 @@ class RecordStorageService {
     if (index != -1) {
       final updatedNotification = _notifications[index].copyWith(isRead: true);
       _notifications[index] = updatedNotification;
-      print('🟢 Notification ${notificationId} marked as read');
+      print('🟢 Notification $notificationId marked as read');
       _notifyListeners();
     } else {
-      print('❌ Notification ${notificationId} not found');
+      print('❌ Notification $notificationId not found');
     }
   }
 
