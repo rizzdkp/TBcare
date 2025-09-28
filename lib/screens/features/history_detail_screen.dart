@@ -148,7 +148,7 @@ class HistoryDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.graphic_eq, color: const Color(0xFF00A8C5), size: 24),
+              const Icon(Icons.graphic_eq, color: Color(0xFF00A8C5), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Spektogram Suara Batuk',
@@ -227,7 +227,7 @@ class HistoryDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.audiotrack, color: const Color(0xFF00A8C5), size: 24),
+              const Icon(Icons.audiotrack, color: Color(0xFF00A8C5), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Rekaman Suara Batuk',
@@ -251,8 +251,8 @@ class HistoryDetailScreen extends StatelessWidget {
                 Container(
                   width: 50,
                   height: 50,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF00A8C5),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF00A8C5),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.play_arrow,
@@ -319,7 +319,7 @@ class HistoryDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.analytics, color: const Color(0xFF00A8C5), size: 24),
+              const Icon(Icons.analytics, color: Color(0xFF00A8C5), size: 24),
               const SizedBox(width: 12),
               Text(
                 'Data Analisis',
@@ -342,8 +342,8 @@ class HistoryDetailScreen extends StatelessWidget {
                     width: 8,
                     height: 8,
                     margin: const EdgeInsets.only(top: 6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF39C12),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF39C12),
                       shape: BoxShape.circle,
                     ),
                   ),

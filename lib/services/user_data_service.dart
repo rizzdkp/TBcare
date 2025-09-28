@@ -6,7 +6,7 @@ class UserDataService {
   static final List<VoidCallback> _listeners = [];
 
   // User Profile Data
-  static Map<String, dynamic> _userData = {
+  static final Map<String, dynamic> _userData = {
     'fullName': 'Jane Doe',
     'phone': '+123 567 89000',
     'email': 'janedoe@example.com',
@@ -15,7 +15,7 @@ class UserDataService {
   };
 
   // Settings Data
-  static Map<String, dynamic> _settingsData = {
+  static final Map<String, dynamic> _settingsData = {
     'generalNotification': true,
     'soundEnabled': true,
     'vibrationEnabled': true,
@@ -24,7 +24,7 @@ class UserDataService {
   };
 
   // Password Data
-  static Map<String, String> _passwordData = {
+  static final Map<String, String> _passwordData = {
     'currentPassword': 'defaultPassword123',
   };
 

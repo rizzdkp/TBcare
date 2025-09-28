@@ -1,11 +1,10 @@
-// lib/screens/main/main_screen.dart
+
 
 import 'package:flutter/material.dart';
-// Ditambahkan untuk styling
 import 'home_screen.dart';
 import 'histori_screen.dart';
 import 'my_profile_screen.dart';
-import 'analysis_screen.dart'; // <-- Import halaman analisis yang baru
+import 'analysis_screen.dart'; 
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -17,10 +16,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  // Daftar halaman yang akan ditampilkan, sekarang dengan AnalysisScreen
+  
   final List<Widget> _pages = [
     const HomeScreen(),
-    const AnalysisScreen(), // <-- Placeholder sudah diganti
+    const AnalysisScreen(), 
     const HistoriScreen(),
     const MyProfileScreen(),
   ];
@@ -37,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFE9F6FE), // Changed to light blue color
+          color: const Color(0xFFE9F6FE), 
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),

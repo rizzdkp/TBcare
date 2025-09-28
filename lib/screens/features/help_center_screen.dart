@@ -127,7 +127,7 @@ class HelpCenterScreen extends StatelessWidget {
         ),
         _buildExpansionTile(
           'Bagaimana cara kerja aplikasi?',
-          'Aplikasi menggunakan...',
+          'Aplikasi menggunakan.',
         ),
         _buildExpansionTile(
           'Apakah hasilnya akurat?',

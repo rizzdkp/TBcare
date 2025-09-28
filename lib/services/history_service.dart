@@ -13,7 +13,7 @@ class HistoryService {
         HistoryRecord(
           id: '1',
           anamnesisId: 'anm_001',
-          analysisDate: DateTime.now().subtract(Duration(hours: 2)),
+          analysisDate: DateTime.now().subtract(const Duration(hours: 2)),
           result: AnalysisResult.danger,
           resultTitle: 'Terindikasi Positif TBC',
           resultDescription:
@@ -32,7 +32,7 @@ class HistoryService {
         HistoryRecord(
           id: '2',
           anamnesisId: 'anm_002',
-          analysisDate: DateTime.now().subtract(Duration(days: 1)),
+          analysisDate: DateTime.now().subtract(const Duration(days: 1)),
           result: AnalysisResult.warning,
           resultTitle: 'Perlu Pengawasan',
           resultDescription:
@@ -51,7 +51,7 @@ class HistoryService {
         HistoryRecord(
           id: '3',
           anamnesisId: 'anm_003',
-          analysisDate: DateTime.now().subtract(Duration(days: 3)),
+          analysisDate: DateTime.now().subtract(const Duration(days: 3)),
           result: AnalysisResult.safe,
           resultTitle: 'Kondisi Normal',
           resultDescription:

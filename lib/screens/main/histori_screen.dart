@@ -375,7 +375,7 @@ class _HistoriScreenState extends State<HistoriScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Icon(Icons.graphic_eq, color: Colors.white, size: 16),
+                      const Icon(Icons.graphic_eq, color: Colors.white, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         'Tap untuk lihat spektogram',
@@ -386,7 +386,7 @@ class _HistoriScreenState extends State<HistoriScreen> {
                         ),
                       ),
                       const Spacer(),
-                      Icon(Icons.arrow_forward_ios,
+                      const Icon(Icons.arrow_forward_ios,
                           color: Colors.white, size: 14),
                     ],
                   ),

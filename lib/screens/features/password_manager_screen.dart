@@ -105,9 +105,9 @@ class _PasswordManagerScreenState extends State<PasswordManagerScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.info_outline,
-                      color: const Color(0xFF00A8C5),
+                      color: Color(0xFF00A8C5),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
