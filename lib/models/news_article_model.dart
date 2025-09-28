@@ -13,13 +13,17 @@ class NewsArticle {
     required this.url,
   });
 
-  // For Currents API format (primary method)
-  factory NewsArticle.fromCurrentsJson(Map<String, dynamic> json) {
-    // Pastikan image URL valid, jika tidak ada gunakan placeholder
-    String imageUrl = json['image'] ?? '';
+  // For NewsAPI format (primary method)
+  factory NewsArticle.fromNewsApiJson(Map<String, dynamic> json) {
+    String imageUrl = '';
 
-    // Jika image kosong atau null, gunakan placeholder yang berbeda untuk setiap artikel
-    if (imageUrl.isEmpty) {
+    // NewsAPI menggunakan field 'urlToImage' untuk gambar
+    if (json['urlToImage'] != null &&
+        json['urlToImage'].toString().isNotEmpty &&
+        json['urlToImage'] != 'null') {
+      imageUrl = json['urlToImage'].toString();
+    } else {
+      // Fallback ke placeholder jika tidak ada gambar
       final placeholders = [
         'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop',
         'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop',
@@ -30,18 +34,22 @@ class NewsArticle {
     }
 
     return NewsArticle(
-      title: json['title'] ?? 'No Title',
-      description: json['description'] ?? 'No Description',
+      title: json['title']?.toString() ?? 'No Title Available',
+      description: json['description']?.toString() ??
+          json['content']?.toString() ??
+          'No Description Available',
       urlToImage: imageUrl,
-      url: json['url'] ?? '',
+      url: json['url']?.toString() ?? '',
     );
   }
 
-  // For NewsAPI format (backup method)
-  factory NewsArticle.fromJson(Map<String, dynamic> json) {
-    String imageUrl = json['urlToImage'] ?? '';
+  // For Currents API format (backup method)
+  factory NewsArticle.fromCurrentsJson(Map<String, dynamic> json) {
+    String imageUrl = '';
 
-    if (imageUrl.isEmpty) {
+    if (json['image'] != null && json['image'].toString().isNotEmpty) {
+      imageUrl = json['image'].toString();
+    } else {
       final placeholders = [
         'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop',
         'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop',
@@ -52,10 +60,11 @@ class NewsArticle {
     }
 
     return NewsArticle(
-      title: json['title'] ?? 'No Title',
-      description: json['description'] ?? 'No Description',
+      title: json['title']?.toString() ?? 'No Title Available',
+      description:
+          json['description']?.toString() ?? 'No Description Available',
       urlToImage: imageUrl,
-      url: json['url'] ?? '',
+      url: json['url']?.toString() ?? '',
     );
   }
 }
