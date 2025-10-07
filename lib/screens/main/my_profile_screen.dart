@@ -57,11 +57,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   'App settings and preferences',
                   const SettingsScreen(),
                 ),
-
-                const SizedBox(height: 20),
-
-                // Profile Stats atau Info
-                _buildProfileStats(),
               ],
             ),
           ),
@@ -201,66 +196,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           context,
           MaterialPageRoute(builder: (_) => destination),
         ),
-      ),
-    );
-  }
-
-  Widget _buildProfileStats() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF4F6F8),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Profile Statistics',
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF00A8C5),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              _buildStatItem('Records', '5', Icons.medical_services),
-              const SizedBox(width: 20),
-              _buildStatItem('Analyses', '3', Icons.analytics),
-              const SizedBox(width: 20),
-              _buildStatItem('Days Active', '15', Icons.calendar_today),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, IconData icon) {
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: const Color(0xFFF39C12), size: 24),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF00A8C5),
-            ),
-          ),
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
       ),
     );
   }

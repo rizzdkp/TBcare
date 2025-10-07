@@ -2,8 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../features/anamnesis_form_screen.dart';
-import '../../services/record_storage_service.dart';
 import '../../models/history_record_model.dart';
 
 class AnalysisScreen extends StatefulWidget {
@@ -14,32 +12,13 @@ class AnalysisScreen extends StatefulWidget {
 }
 
 class _AnalysisScreenState extends State<AnalysisScreen> {
-  List<AnamnesisRecord> records = [];
   List<HistoryRecord> analysisResults = [];
   String selectedFilter = 'All';
 
   @override
   void initState() {
     super.initState();
-    _loadRecords();
     _loadDummyAnalysisResults();
-    RecordStorageService.addListener(_onRecordsChanged);
-  }
-
-  @override
-  void dispose() {
-    RecordStorageService.removeListener(_onRecordsChanged);
-    super.dispose();
-  }
-
-  void _loadRecords() {
-    setState(() {
-      records = RecordStorageService.getAllRecords();
-    });
-  }
-
-  void _onRecordsChanged() {
-    _loadRecords();
   }
 
   void _loadDummyAnalysisResults() {
@@ -125,23 +104,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     return analysisResults
         .where((result) => result.result == filterResult)
         .toList();
-  }
-
-  void _navigateAndAddRecord(BuildContext context) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const AnamnesisFormScreen()),
-    );
-
-    if (result is AnamnesisRecord) {
-      RecordStorageService.addRecord(result);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Record berhasil disimpan!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    }
   }
 
   void _showFilterDialog() {
@@ -231,11 +193,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                 : _buildAnalysisResultsList(),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateAndAddRecord(context),
-        backgroundColor: const Color(0xFF1CB5E0),
-        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -499,23 +456,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   fontWeight: FontWeight.bold,
                   color: Colors.grey[600])),
           const SizedBox(height: 10),
-          Text('Tambahkan rekam anamnesis untuk memulai analisis TBC.',
+          Text(
+              'Data hasil analisis akan muncul di sini setelah proses analisis selesai.',
               style: GoogleFonts.poppins(color: Colors.grey[500])),
-          const SizedBox(height: 30),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: Text('Tambah Anamnesis',
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold, color: Colors.white)),
-            onPressed: () => _navigateAndAddRecord(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1CB5E0),
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ),
-          ),
         ],
       ),
     );

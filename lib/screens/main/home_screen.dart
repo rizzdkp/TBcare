@@ -7,7 +7,6 @@ import 'package:pkm/services/user_data_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/news_article_model.dart';
 import '../../services/news_api_service.dart';
-import '../../services/record_storage_service.dart';
 import '../../services/connectivity_service.dart';
 import '../features/notifikasi_screen.dart';
 import '../features/settings_screen.dart'; // Import SettingsScreen
@@ -61,12 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _startCountdown();
     _loadNews(); // load initial news
-
-    // Initialize sample notifications
-    RecordStorageService.addSampleNotifications();
-
-    // Listen to notification changes
-    RecordStorageService.addListener(_updateNotificationCount);
     _updateNotificationCount();
   }
 
@@ -93,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _pageController.dispose();
     _timer?.cancel();
-    RecordStorageService.removeListener(_updateNotificationCount);
     super.dispose();
   }
 
@@ -133,9 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
   // Update method _updateNotificationCount
   void _updateNotificationCount() {
     if (mounted) {
-      final newCount = RecordStorageService.getAllNotifications()
-          .where((notif) => !notif.isRead)
-          .length;
+      // Set dummy notification count since RecordStorageService is removed
+      final newCount = 0;
 
       print('🔵 Updating notification count: $_notificationCount -> $newCount');
 
@@ -1079,10 +1070,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Container(
                                                   width: 26,
                                                   height: 26,
-                                                  decoration: const BoxDecoration(
+                                                  decoration:
+                                                      const BoxDecoration(
                                                     shape: BoxShape.circle,
-                                                    gradient:
-                                                        LinearGradient(
+                                                    gradient: LinearGradient(
                                                       colors: [
                                                         Color(0xFF18B5B2),
                                                         Color(0xFF0E8A86)

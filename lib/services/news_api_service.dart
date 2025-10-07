@@ -11,7 +11,7 @@ class NewsApiService {
 
   // Add cache untuk track artikel yang sudah pernah ditampilkan
   static Set<String> _shownArticleTitles = <String>{};
-  static List<String> _sortOptions = ['publishedAt', 'popularity', 'relevancy'];
+  static final List<String> _sortOptions = ['publishedAt', 'popularity', 'relevancy'];
   static int _currentSortIndex = 0;
 
   static Future<List<NewsArticle>> fetchHealthNews(
