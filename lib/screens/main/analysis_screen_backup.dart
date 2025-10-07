@@ -52,10 +52,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           analysisDate: DateTime.now().subtract(const Duration(hours: 2)),
           result: AnalysisResult.danger,
           resultTitle: 'Positif TBC',
-          resultDescription:
-              'Hasil analisis menunjukkan kemungkinan tinggi terkena TBC berdasarkan suara batuk yang dianalisis.',
-          recommendation:
-              'Segera lakukan pemeriksaan lanjutan dan konsultasi dengan dokter.',
+          resultDescription: 'Hasil analisis menunjukkan kemungkinan tinggi terkena TBC berdasarkan suara batuk yang dianalisis.',
+          recommendation: 'Segera lakukan pemeriksaan lanjutan dan konsultasi dengan dokter.',
           audioPath: '/audio/sample1.wav',
           spectrogramPath: '/images/spectrogram1.png',
           confidence: 0.87,
@@ -71,8 +69,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           analysisDate: DateTime.now().subtract(const Duration(days: 1)),
           result: AnalysisResult.safe,
           resultTitle: 'Negatif TBC',
-          resultDescription:
-              'Hasil analisis menunjukkan tidak ada indikasi TBC berdasarkan suara batuk.',
+          resultDescription: 'Hasil analisis menunjukkan tidak ada indikasi TBC berdasarkan suara batuk.',
           recommendation: 'Tetap pantau gejala dan lakukan pemeriksaan rutin.',
           audioPath: '/audio/sample2.wav',
           spectrogramPath: '/images/spectrogram2.png',
@@ -89,10 +86,8 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           analysisDate: DateTime.now().subtract(const Duration(days: 3)),
           result: AnalysisResult.warning,
           resultTitle: 'Perlu Pemeriksaan Lanjutan',
-          resultDescription:
-              'Hasil analisis menunjukkan pola yang memerlukan pemeriksaan lebih lanjut.',
-          recommendation:
-              'Disarankan untuk melakukan tes dahak dan konsultasi dokter.',
+          resultDescription: 'Hasil analisis menunjukkan pola yang memerlukan pemeriksaan lebih lanjut.',
+          recommendation: 'Disarankan untuk melakukan tes dahak dan konsultasi dokter.',
           audioPath: '/audio/sample3.wav',
           spectrogramPath: '/images/spectrogram3.png',
           confidence: 0.75,
@@ -122,9 +117,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
         break;
     }
 
-    return analysisResults
-        .where((result) => result.result == filterResult)
-        .toList();
+    return analysisResults.where((result) => result.result == filterResult).toList();
   }
 
   void _navigateAndAddRecord(BuildContext context) async {
@@ -282,12 +275,9 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   }
 
   Widget _buildStatistics() {
-    final positifCount =
-        analysisResults.where((r) => r.result == AnalysisResult.danger).length;
-    final negatifCount =
-        analysisResults.where((r) => r.result == AnalysisResult.safe).length;
-    final pemeriksaanCount =
-        analysisResults.where((r) => r.result == AnalysisResult.warning).length;
+    final positifCount = analysisResults.where((r) => r.result == AnalysisResult.danger).length;
+    final negatifCount = analysisResults.where((r) => r.result == AnalysisResult.safe).length;
+    final pemeriksaanCount = analysisResults.where((r) => r.result == AnalysisResult.warning).length;
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -352,7 +342,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   Widget _buildAnalysisCard(HistoryRecord result) {
     Color resultColor;
     IconData resultIcon;
-
+    
     switch (result.result) {
       case AnalysisResult.danger:
         resultColor = Colors.red;
@@ -425,8 +415,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: resultColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),

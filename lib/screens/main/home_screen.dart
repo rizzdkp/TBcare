@@ -12,7 +12,6 @@ import '../../services/connectivity_service.dart';
 import '../features/notifikasi_screen.dart';
 import '../features/settings_screen.dart'; // Import SettingsScreen
 import '../features/edit_profile_screen.dart';
-import 'analysis_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   // Menambahkan const dan key agar sesuai dengan praktik terbaik
@@ -178,16 +177,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Show snackbar untuk feedback
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.refresh, color: Colors.white, size: 20),
-            const SizedBox(width: 8),
-            const Text('Memperbarui berita...'),
+            Icon(Icons.refresh, color: Colors.white, size: 20),
+            SizedBox(width: 8),
+            Text('Memperbarui berita...'),
           ],
         ),
-        backgroundColor: const Color(0xFF00A8C5),
-        duration: const Duration(seconds: 2),
+        backgroundColor: Color(0xFF00A8C5),
+        duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -1080,10 +1079,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 Container(
                                                   width: 26,
                                                   height: 26,
-                                                  decoration: BoxDecoration(
+                                                  decoration: const BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     gradient:
-                                                        const LinearGradient(
+                                                        LinearGradient(
                                                       colors: [
                                                         Color(0xFF18B5B2),
                                                         Color(0xFF0E8A86)

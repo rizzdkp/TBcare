@@ -1,10 +1,8 @@
-
-
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import 'histori_screen.dart';
+import 'warning_followup_screen.dart';
 import 'my_profile_screen.dart';
-import 'analysis_screen.dart'; 
+import 'analysis_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,11 +14,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  
   final List<Widget> _pages = [
     const HomeScreen(),
-    const AnalysisScreen(), 
-    const HistoriScreen(),
+    const AnalysisScreen(),
+    const WarningFollowupScreen(),
     const MyProfileScreen(),
   ];
 
@@ -36,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
       body: _pages[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFE9F6FE), 
+          color: const Color(0xFFE9F6FE),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -58,9 +55,9 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Analysis',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.history_outlined),
-              activeIcon: Icon(Icons.history),
-              label: 'History',
+              icon: Icon(Icons.warning_outlined),
+              activeIcon: Icon(Icons.warning),
+              label: 'Peringatan',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
@@ -70,7 +67,8 @@ class _MainScreenState extends State<MainScreen> {
           ],
           currentIndex: _selectedIndex,
           selectedItemColor: const Color(0xFFF39C12), // Orange for selected
-          unselectedItemColor: const Color.fromARGB(255, 35, 128, 154), // Changed to grey for better contrast on light background
+          unselectedItemColor: const Color.fromARGB(255, 35, 128,
+              154), // Changed to grey for better contrast on light background
           backgroundColor: Colors.transparent, // Keep transparent
           elevation: 0,
           type: BottomNavigationBarType.fixed,
