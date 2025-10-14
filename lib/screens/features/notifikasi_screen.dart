@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import '../../services/user_data_service.dart';
 
 // Simple notification model for this screen only
 class NotificationItem {
@@ -20,12 +23,42 @@ class NotificationItem {
     required this.isRead,
     required this.type,
   });
+
+  // Convert to JSON for storage
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'message': message,
+      'timestamp': timestamp.toIso8601String(),
+      'isRead': isRead,
+      'type': type.toString(),
+    };
+  }
+
+  // Create from JSON
+  factory NotificationItem.fromJson(Map<String, dynamic> json) {
+    return NotificationItem(
+      id: json['id'],
+      title: json['title'],
+      message: json['message'],
+      timestamp: DateTime.parse(json['timestamp']),
+      isRead: json['isRead'],
+      type: NotificationType.values.firstWhere(
+        (e) => e.toString() == json['type'],
+        orElse: () => NotificationType.info,
+      ),
+    );
+  }
 }
 
 enum NotificationType {
+  welcome,
   analysisComplete,
+  dataLoaded,
   reminder,
   warning,
+  info,
 }
 
 class NotifikasiScreen extends StatefulWidget {
@@ -33,6 +66,53 @@ class NotifikasiScreen extends StatefulWidget {
 
   @override
   _NotifikasiScreenState createState() => _NotifikasiScreenState();
+
+  // Static method untuk menambah notifikasi dari luar
+  static Future<void> addNotification({
+    required String title,
+    required String message,
+    required NotificationType type,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      List<NotificationItem> notifications = [];
+
+      final notifJson = prefs.getString('app_notifications');
+      if (notifJson != null) {
+        final List<dynamic> decoded = json.decode(notifJson);
+        notifications =
+            decoded.map((item) => NotificationItem.fromJson(item)).toList();
+      }
+
+      // Add new notification
+      notifications.insert(
+        0,
+        NotificationItem(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: title,
+          message: message,
+          timestamp: DateTime.now(),
+          isRead: false,
+          type: type,
+        ),
+      );
+
+      // Keep only last 50 notifications
+      if (notifications.length > 50) {
+        notifications = notifications.sublist(0, 50);
+      }
+
+      // Save
+      final encoded = json.encode(
+        notifications.map((item) => item.toJson()).toList(),
+      );
+      await prefs.setString('app_notifications', encoded);
+
+      print('✅ Notification added: $title');
+    } catch (e) {
+      print('❌ Error adding notification: $e');
+    }
+  }
 }
 
 class _NotifikasiScreenState extends State<NotifikasiScreen> {
@@ -41,44 +121,65 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
   @override
   void initState() {
     super.initState();
-    _loadDummyNotifications();
+    _loadNotifications();
+    UserDataService.addListener(_onDataChanged);
   }
 
-  void _loadDummyNotifications() {
-    setState(() {
-      notifications = [
-        NotificationItem(
-          id: '1',
-          title: 'Hasil Analisis Tersedia',
-          message:
-              'Hasil analisis TBC Anda sudah tersedia. Silakan cek di menu Analysis.',
-          timestamp: DateTime.now().subtract(const Duration(hours: 1)),
-          isRead: false,
-          type: NotificationType.analysisComplete,
-        ),
-        NotificationItem(
-          id: '2',
-          title: 'Pengingat Pemeriksaan',
-          message:
-              'Jangan lupa untuk melakukan pemeriksaan lanjutan sesuai rekomendasi dokter.',
-          timestamp: DateTime.now().subtract(const Duration(days: 1)),
-          isRead: true,
-          type: NotificationType.reminder,
-        ),
-        NotificationItem(
-          id: '3',
-          title: 'Peringatan Hasil Positif',
-          message:
-              'Hasil analisis menunjukkan kemungkinan TBC. Segera konsultasi dengan dokter.',
-          timestamp: DateTime.now().subtract(const Duration(hours: 3)),
-          isRead: false,
-          type: NotificationType.warning,
-        ),
-      ];
-    });
+  @override
+  void dispose() {
+    UserDataService.removeListener(_onDataChanged);
+    super.dispose();
   }
 
-  void _markAllAsRead() {
+  void _onDataChanged() {
+    if (mounted) {
+      _loadNotifications();
+    }
+  }
+
+  // Load notifications from SharedPreferences
+  Future<void> _loadNotifications() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final notifJson = prefs.getString('app_notifications');
+
+      if (notifJson != null) {
+        final List<dynamic> decoded = json.decode(notifJson);
+        setState(() {
+          notifications =
+              decoded.map((item) => NotificationItem.fromJson(item)).toList();
+          notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        });
+      } else {
+        setState(() {
+          notifications = [];
+        });
+      }
+
+      print('📥 Loaded ${notifications.length} notifications');
+    } catch (e) {
+      print('❌ Error loading notifications: $e');
+      setState(() {
+        notifications = [];
+      });
+    }
+  }
+
+  // Save notifications to SharedPreferences
+  Future<void> _saveNotifications() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final notifJson = json.encode(
+        notifications.map((item) => item.toJson()).toList(),
+      );
+      await prefs.setString('app_notifications', notifJson);
+      print('💾 Saved ${notifications.length} notifications');
+    } catch (e) {
+      print('❌ Error saving notifications: $e');
+    }
+  }
+
+  Future<void> _markAllAsRead() async {
     setState(() {
       notifications = notifications.map((notif) {
         return NotificationItem(
@@ -92,9 +193,35 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       }).toList();
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Semua notifikasi sudah dibaca')),
-    );
+    // Save to storage
+    await _saveNotifications();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Semua notifikasi sudah dibaca')),
+      );
+    }
+  }
+
+  Future<void> _markAsRead(String id) async {
+    setState(() {
+      notifications = notifications.map((notif) {
+        if (notif.id == id) {
+          return NotificationItem(
+            id: notif.id,
+            title: notif.title,
+            message: notif.message,
+            timestamp: notif.timestamp,
+            isRead: true,
+            type: notif.type,
+          );
+        }
+        return notif;
+      }).toList();
+    });
+
+    // Save to storage
+    await _saveNotifications();
   }
 
   @override
@@ -180,9 +307,17 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
     Color iconColor;
 
     switch (notification.type) {
+      case NotificationType.welcome:
+        iconData = Icons.waving_hand;
+        iconColor = Colors.purple;
+        break;
       case NotificationType.analysisComplete:
         iconData = Icons.analytics;
         iconColor = Colors.blue;
+        break;
+      case NotificationType.dataLoaded:
+        iconData = Icons.cloud_done;
+        iconColor = Colors.green;
         break;
       case NotificationType.reminder:
         iconData = Icons.access_time;
@@ -191,6 +326,10 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
       case NotificationType.warning:
         iconData = Icons.warning;
         iconColor = Colors.red;
+        break;
+      case NotificationType.info:
+        iconData = Icons.info_outline;
+        iconColor = Colors.blue;
         break;
     }
 
@@ -207,6 +346,11 @@ class _NotifikasiScreenState extends State<NotifikasiScreen> {
         ),
       ),
       child: ListTile(
+        onTap: () {
+          if (!notification.isRead) {
+            _markAsRead(notification.id);
+          }
+        },
         contentPadding: const EdgeInsets.all(16),
         leading: Container(
           padding: const EdgeInsets.all(8),

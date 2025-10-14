@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/user_data_service.dart';
+import '../../services/api_service.dart';
 
 class WarningFollowupScreen extends StatefulWidget {
   const WarningFollowupScreen({super.key});
@@ -11,78 +13,262 @@ class WarningFollowupScreen extends StatefulWidget {
 }
 
 class _WarningFollowupScreenState extends State<WarningFollowupScreen> {
-  // Data dummy untuk simulasi hasil analisis
-  final List<FollowupItem> followupItems = [
-    FollowupItem(
-      id: '1',
-      type: FollowupType.positive,
-      title: 'Positif TBC - Segera Bertindak',
-      description: 'Hasil analisis menunjukkan kemungkinan tinggi terkena TBC.',
-      lastAnalysisDate: DateTime.now().subtract(const Duration(hours: 2)),
-      priority: Priority.urgent,
-      status: FollowupStatus.pending,
-      actions: [
-        'Segera kunjungi dokter spesialis paru',
-        'Lakukan tes dahak untuk konfirmasi',
-        'Mulai isolasi diri untuk mencegah penularan',
-        'Hubungi faskes terdekat: RS Paru Jakarta (021-4891111)',
-        'Edukasi keluarga tentang pencegahan TBC'
-      ],
-      warnings: [
-        'PENTING: TBC adalah penyakit menular',
-        'Gunakan masker saat berinteraksi dengan orang lain',
-        'Jangan tunda pengobatan',
-        'Catat semua gejala yang dialami'
-      ],
-    ),
-    FollowupItem(
-      id: '2',
-      type: FollowupType.negative,
-      title: 'Negatif TBC - Tetap Waspada',
-      description: 'Hasil analisis tidak menunjukkan indikasi TBC.',
-      lastAnalysisDate: DateTime.now().subtract(const Duration(days: 1)),
-      priority: Priority.medium,
-      status: FollowupStatus.monitoring,
-      actions: [
-        'Lanjutkan pemantauan gejala secara berkala',
-        'Konsultasi dokter jika gejala memburuk',
-        'Jaga pola hidup sehat dan kebersihan',
-        'Tes ulang jika ada gejala baru',
-        'Kontrol rutin setiap 3 bulan'
-      ],
-      warnings: [
-        'Batuk bisa disebabkan kondisi lain',
-        'Segera periksa jika gejala berlanjut > 2 minggu',
-        'Waspadai demam tinggi dan batuk berdarah',
-        'Jaga daya tahan tubuh dengan nutrisi baik'
-      ],
-    ),
-    FollowupItem(
-      id: '3',
-      type: FollowupType.uncertain,
-      title: 'Hasil Tidak Pasti - Perlu Pemeriksaan Lanjutan',
-      description: 'Hasil analisis memerlukan konfirmasi lebih lanjut.',
-      lastAnalysisDate: DateTime.now().subtract(const Duration(days: 3)),
-      priority: Priority.high,
-      status: FollowupStatus.pending,
-      actions: [
-        'Segera lakukan tes dahak BTA 3 kali',
-        'Rontgen dada untuk evaluasi paru',
-        'Konsultasi dokter spesialis paru',
-        'Ulangi analisis suara batuk dalam 1 minggu',
-        'Monitor suhu tubuh harian'
-      ],
-      warnings: [
-        'Jangan abaikan gejala yang ada',
-        'Hindari kontak dekat dengan lansia/anak-anak',
-        'Segera ke IGD jika sesak napas berat',
-        'Catat perubahan gejala setiap hari'
-      ],
-    ),
-  ];
+  bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    UserDataService.addListener(_onDataChanged);
+    _loadDataFromAPI();
+  }
+
+  @override
+  void dispose() {
+    UserDataService.removeListener(_onDataChanged);
+    super.dispose();
+  }
+
+  void _onDataChanged() {
+    print('🔔 WARNING SCREEN - Data changed! Triggering rebuild...');
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _loadDataFromAPI() async {
+    if (_isLoading) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      print('🌐 WARNING SCREEN - Fetching data from API...');
+      final response = await ApiService.getPatientHistory();
+
+      if (response['success'] == true && response['data'] != null) {
+        final data = response['data'];
+
+        // Simpan patient data (including tbcareProfile)
+        if (data['patient'] != null) {
+          UserDataService.syncFromAPI(data['patient']);
+          print('✅ WARNING - Patient synced (with tbcareProfile)');
+        }
+
+        // NEW: Use first history item as "firstExam"
+        if (data['history'] != null &&
+            data['history'] is List &&
+            (data['history'] as List).isNotEmpty) {
+          final firstHistoryItem = (data['history'] as List)[0];
+          UserDataService.setFirstExamData(firstHistoryItem);
+          UserDataService.setHistoryData(data['history']);
+          print('✅ WARNING - First history item saved as firstExam');
+          print('   ID: ${firstHistoryItem['_id']}');
+          print('   Result: ${firstHistoryItem['result']}');
+          print('   History synced: ${(data['history'] as List).length} items');
+        } else {
+          UserDataService.setFirstExamData(null);
+          UserDataService.setHistoryData([]);
+          print('⚠️ WARNING - No history in API');
+        }
+      } else {
+        print('❌ WARNING - API call failed: ${response['message']}');
+      }
+    } catch (e) {
+      print('❌ WARNING - Error: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  // Generate followup items dari API data (menggunakan history array)
+  List<FollowupItem> get followupItems {
+    final firstExam = UserDataService.getFirstExamData();
+    final historyData = UserDataService.getHistoryData();
+
+    print('⚠️ WARNING SCREEN - Generating followup items...');
+    print(
+        '⚠️ WARNING SCREEN - firstExam: ${firstExam != null ? "EXISTS" : "NULL"}');
+    if (firstExam != null) {
+      print('⚠️ WARNING SCREEN - firstExam._id: ${firstExam['_id']}');
+      print('⚠️ WARNING SCREEN - firstExam.result: ${firstExam['result']}');
+      print('⚠️ WARNING SCREEN - firstExam full data: $firstExam');
+    }
+    print('⚠️ WARNING SCREEN - history count: ${historyData.length}');
+
+    // Jika belum ada analisis sama sekali, tidak ada yang perlu ditampilkan
+    if (firstExam == null) {
+      print('⚠️ WARNING SCREEN - firstExam is NULL, return EMPTY');
+      return [];
+    }
+
+    if (historyData.isEmpty) {
+      print(
+          'ℹ️ WARNING SCREEN - History kosong tapi firstExam ada, menggunakan firstExam untuk follow up');
+    }
+
+    String resultType =
+        firstExam['result']?.toString().toUpperCase() ?? 'UNKNOWN';
+    DateTime analysisDate = DateTime.now();
+
+    if (firstExam['createdAt'] != null) {
+      try {
+        analysisDate = DateTime.parse(firstExam['createdAt'].toString());
+      } catch (e) {
+        print('Error parsing date: $e');
+      }
+    }
+
+    String sputum =
+        firstExam['sputumCondition']?.toString() ?? 'Tidak diketahui';
+
+    // Extract segment counts and other info from history item
+    int tbSegmentCount = firstExam['tbSegmentCount'] ?? 0;
+    int totalCoughSegments = firstExam['totalCoughSegments'] ?? 0;
+
+    print(
+        '⚠️ WARNING SCREEN - Ada analisis, result: $resultType, sputum: $sputum, TB segments: $tbSegmentCount/$totalCoughSegments');
+
+    final isPositive = resultType == 'TB' ||
+        resultType.contains('POSITIVE') ||
+        resultType.contains('DANGER');
+    final isNegative = resultType == 'NORMAL' ||
+        resultType == 'SAFE' ||
+        resultType == 'NEGATIVE' ||
+        resultType.contains('SAFE');
+
+    if (isPositive) {
+      // TB POSITIF
+      print(
+          '⚠️ WARNING SCREEN - Menampilkan peringatan TB POSITIF (URGENT, status COMPLETED, pending hilang)');
+      return [
+        FollowupItem(
+          id: firstExam['_id']?.toString() ??
+              firstExam['id']?.toString() ??
+              '1',
+          type: FollowupType.positive,
+          title: 'Positif TBC - Segera Bertindak',
+          description:
+              'Hasil analisis menunjukkan kemungkinan tinggi terkena TBC. Kondisi sputum: $sputum. Segmen TB terdeteksi: $tbSegmentCount dari $totalCoughSegments segmen batuk.',
+          lastAnalysisDate: analysisDate,
+          priority: Priority.urgent,
+          status: FollowupStatus.completed,
+          actions: [
+            'Segera kunjungi dokter spesialis paru',
+            'Lakukan tes dahak (BTA) 3 kali untuk konfirmasi',
+            'Mulai isolasi diri untuk mencegah penularan',
+            'Hubungi faskes terdekat: RS Paru Surabaya (031-5501078)',
+            'Edukasi keluarga tentang pencegahan TBC',
+            'Lakukan rontgen thorax untuk melihat kondisi paru'
+          ],
+          warnings: [
+            'PENTING: TBC adalah penyakit menular melalui udara',
+            'Gunakan masker saat berinteraksi dengan orang lain',
+            'Jangan tunda pengobatan - TBC dapat disembuhkan dengan obat',
+            'Catat semua gejala yang dialami (batuk, demam, keringat malam)',
+            'Hindari kontak dekat dengan bayi, anak-anak, dan lansia',
+            'Konsumsi makanan bergizi untuk meningkatkan daya tahan tubuh'
+          ],
+        ),
+      ];
+    } else if (isNegative) {
+      // NORMAL/NEGATIF
+      print(
+          '⚠️ WARNING SCREEN - Menampilkan peringatan NEGATIF (status MONITORING, pending hilang)');
+      return [
+        FollowupItem(
+          id: firstExam['_id']?.toString() ??
+              firstExam['id']?.toString() ??
+              '1',
+          type: FollowupType.negative,
+          title: 'Negatif TBC - Tetap Waspada',
+          description:
+              'Hasil analisis tidak menunjukkan indikasi TBC. Kondisi sputum: $sputum. Segmen non-TB: ${firstExam['nonTbSegmentCount'] ?? 0} dari $totalCoughSegments segmen batuk.',
+          lastAnalysisDate: analysisDate,
+          priority: Priority.medium,
+          status: FollowupStatus.monitoring,
+          actions: [
+            'Lanjutkan pemantauan gejala secara berkala',
+            'Konsultasi dokter jika batuk berlanjut > 2 minggu',
+            'Jaga pola hidup sehat dan kebersihan lingkungan',
+            'Tes ulang jika muncul gejala baru (demam, keringat malam)',
+            'Kontrol rutin setiap 3 bulan jika ada riwayat kontak TB',
+            'Tingkatkan daya tahan tubuh dengan olahraga dan nutrisi'
+          ],
+          warnings: [
+            'Batuk bisa disebabkan oleh kondisi lain (infeksi virus, alergi)',
+            'Segera periksa jika gejala memburuk atau muncul batuk berdarah',
+            'Waspadai demam tinggi yang tidak turun > 3 hari',
+            'Jaga ventilasi rumah agar udara selalu segar',
+            'Hindari asap rokok dan polusi udara',
+            'Istirahat cukup dan kelola stress dengan baik'
+          ],
+        ),
+      ];
+    } else {
+      print(
+          '⚠️ WARNING SCREEN - Menampilkan peringatan hasil tidak pasti/lanjutan');
+      return [
+        FollowupItem(
+          id: firstExam['_id']?.toString() ??
+              firstExam['id']?.toString() ??
+              '1',
+          type: FollowupType.uncertain,
+          title: 'Perlu Pemeriksaan Lanjutan',
+          description:
+              'Hasil analisis belum konklusif. Kondisi sputum: $sputum. Total segmen batuk: $totalCoughSegments.',
+          lastAnalysisDate: analysisDate,
+          priority: Priority.high,
+          status: FollowupStatus.inProgress,
+          actions: [
+            'Jadwalkan pemeriksaan lanjutan di fasilitas kesehatan',
+            'Diskusikan dengan dokter untuk tes tambahan (rontgen, kultur dahak)',
+            'Catat gejala yang dialami setiap hari',
+            'Hindari kontak dekat dengan keluarga sampai hasil final',
+            'Lakukan pola hidup bersih dan sehat sambil menunggu hasil akhir'
+          ],
+          warnings: [
+            'Hasil ini belum final, jangan panik namun tetap waspada',
+            'Jaga penggunaan masker untuk mencegah kemungkinan penularan',
+            'Segera konsultasi jika muncul gejala tambahan seperti demam tinggi',
+            'Ikuti arahan tenaga kesehatan selama proses pemeriksaan lanjutan'
+          ],
+        ),
+      ];
+    }
+  }
+
+  // FollowupItem(
+  //   id: '2',
+  //   type: FollowupType.negative,
+  //   title: 'Negatif TBC - Tetap Waspada',
+  //   description: 'Hasil analisis tidak menunjukkan indikasi TBC.',
+  //   lastAnalysisDate: DateTime.now().subtract(const Duration(days: 1)),
+  //   priority: Priority.medium,
+  //   status: FollowupStatus.monitoring,
+  //   actions: [
+  //     'Lanjutkan pemantauan gejala secara berkala',
+  //     'Konsultasi dokter jika gejala memburuk',
+  //     'Jaga pola hidup sehat dan kebersihan',
+  //     'Tes ulang jika ada gejala baru',
+  //     'Kontrol rutin setiap 3 bulan'
+  //   ],
+  //   warnings: [
+  //     'Batuk bisa disebabkan kondisi lain',
+  //     'Segera periksa jika gejala berlanjut > 2 minggu',
+  //     'Waspadai demam tinggi dan batuk berdarah',
+  //     'Jaga daya tahan tubuh dengan nutrisi baik'
+  //   ],
+  // ),
+  // FollowupItem(
+  //   id: '3',
+  //   type: FollowupType.uncertain,
+  //   title: 'Hasil Tidak Pasti - Perlu Pemeriksaan Lanjutan',
+  @override
   Widget build(BuildContext context) {
+    print('🎨 WARNING SCREEN - BUILD called');
+    print('   followupItems.length: ${followupItems.length}');
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: AppBar(
@@ -98,12 +284,18 @@ class _WarningFollowupScreenState extends State<WarningFollowupScreen> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFF00A8C5)),
-            onPressed: () {
-              setState(() {
-                // Refresh data
-              });
-            },
+            icon: _isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Color(0xFF00A8C5)),
+                    ),
+                  )
+                : const Icon(Icons.refresh, color: Color(0xFF00A8C5)),
+            onPressed: _isLoading ? null : _loadDataFromAPI,
           ),
         ],
       ),
@@ -124,6 +316,11 @@ class _WarningFollowupScreenState extends State<WarningFollowupScreen> {
     final pendingCount = followupItems
         .where((item) => item.status == FollowupStatus.pending)
         .length;
+
+    print('📊 WARNING - Summary Cards:');
+    print('   Urgent: $urgentCount');
+    print('   Pending: $pendingCount');
+    print('   Total: ${followupItems.length}');
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -200,11 +397,77 @@ class _WarningFollowupScreenState extends State<WarningFollowupScreen> {
   }
 
   Widget _buildFollowupList() {
+    print('📋 WARNING - Building list with ${followupItems.length} items');
+
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (followupItems.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.medical_information_outlined,
+                size: 120,
+                color: Colors.grey[300],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Data Belum Dianalisis',
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF2C3E50),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Hasil batuk anda sedang dianalisis',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: _isLoading ? null : _loadDataFromAPI,
+                icon: const Icon(Icons.refresh),
+                label: Text(
+                  'Muat Ulang Data',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF00A8C5),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: followupItems.length,
       itemBuilder: (context, index) {
         final item = followupItems[index];
+        print('   Item $index: ${item.title} - Status: ${item.status}');
         return _buildFollowupCard(item);
       },
     );
@@ -214,6 +477,9 @@ class _WarningFollowupScreenState extends State<WarningFollowupScreen> {
     Color typeColor;
     IconData typeIcon;
     Color priorityColor;
+
+    // Jika item id adalah pending, gunakan icon khusus
+    final isPendingItem = item.id == 'pending_1';
 
     switch (item.type) {
       case FollowupType.positive:
@@ -226,7 +492,8 @@ class _WarningFollowupScreenState extends State<WarningFollowupScreen> {
         break;
       case FollowupType.uncertain:
         typeColor = Colors.orange;
-        typeIcon = Icons.help_outline;
+        // Gunakan icon berbeda untuk pending vs uncertain lainnya
+        typeIcon = isPendingItem ? Icons.pending_actions : Icons.help_outline;
         break;
     }
 
@@ -417,9 +684,8 @@ class _WarningFollowupScreenState extends State<WarningFollowupScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          _buildContactItem('IGD RS Paru Jakarta', '021-4891111'),
+          _buildContactItem('IGD RS Paru Surabaya', '021-4891111'),
           _buildContactItem('Puskesmas Terdekat', '119 (Halo Kemkes)'),
-          _buildContactItem('Konsultasi Online', 'Telemedicine tersedia 24/7'),
         ],
       ),
     );

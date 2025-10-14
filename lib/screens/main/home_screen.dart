@@ -7,9 +7,8 @@ import 'package:pkm/services/user_data_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/news_article_model.dart';
 import '../../services/news_api_service.dart';
-import '../../services/connectivity_service.dart';
 import '../features/notifikasi_screen.dart';
-import '../features/settings_screen.dart'; // Import SettingsScreen
+import '../features/settings_screen.dart';
 import '../features/edit_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,31 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Add countdown variables
   Timer? _timer;
   Duration _timeUntil2030 = Duration.zero;
-  int _notificationCount = 0; // Tambahkan ini
-
-  final List<Map<String, String>> _bannerData = [
-    {
-      'title': 'Batuk Lebih dari 2 Minggu? Waspadai TBC.',
-      'subtitle':
-          'Lakukan Skrining Awal TBC Dengan Menganalisis Suara Batuk Anda Di Sini.',
-      'buttonText': 'Cek Kondisi Anda',
-      'backgroundImage': 'assets/images/banner 1.jpg',
-    },
-    {
-      'title': 'Jaga Kesehatan Paru-paru Anda.',
-      'subtitle':
-          'Ketahui cara menjaga paru-paru tetap sehat dan terhindar dari berbagai penyakit.',
-      'buttonText': 'Lihat Tips Sehat',
-      'backgroundImage': 'assets/images/image.png',
-    },
-    {
-      'title': 'Pentingnya Deteksi Dini TBC',
-      'subtitle':
-          'Semakin cepat terdeteksi, semakin besar peluang untuk sembuh total.',
-      'buttonText': 'Pelajari Lebih Lanjut',
-      'backgroundImage': 'assets/images/banner3.jpg',
-    },
-  ];
+  int _notificationCount = 0;
 
   @override
   void initState() {
@@ -61,6 +36,22 @@ class _HomeScreenState extends State<HomeScreen> {
     _startCountdown();
     _loadNews(); // load initial news
     _updateNotificationCount();
+
+    // Listen untuk perubahan user data
+    UserDataService.addListener(_onUserDataChanged);
+
+    // Update notification count setiap kali user data berubah
+    UserDataService.addListener(_updateNotificationCount);
+  }
+
+  // Callback ketika user data berubah
+  void _onUserDataChanged() {
+    if (mounted) {
+      print('🔄 HOME - User data changed, refreshing UI...');
+      setState(() {
+        // Trigger rebuild untuk update info user di welcome section
+      });
+    }
   }
 
   void _startCountdown() {
@@ -86,71 +77,18 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _pageController.dispose();
     _timer?.cancel();
+    UserDataService.removeListener(_onUserDataChanged);
+    UserDataService.removeListener(_updateNotificationCount);
     super.dispose();
-  }
-
-  // Update method _launchURL
-  Future<void> _launchURL(String urlString) async {
-    try {
-      final Uri url = Uri.parse(urlString);
-
-      if (await canLaunchUrl(url)) {
-        await launchUrl(
-          url,
-          mode: LaunchMode.externalApplication,
-        );
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Tidak bisa membuka link: $urlString'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      print('Error launching URL: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error membuka link: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
   }
 
   // Update method _updateNotificationCount
   void _updateNotificationCount() {
     if (mounted) {
-      // Set dummy notification count since RecordStorageService is removed
-      final newCount = 0;
-
-      print('🔵 Updating notification count: $_notificationCount -> $newCount');
-
       setState(() {
-        _notificationCount = newCount;
+        _notificationCount = UserDataService.getHistoryCount();
       });
-    }
-  }
-
-  Future<void> _checkConnectivity() async {
-    final hasConnection = await ConnectivityService.hasInternetConnection();
-    final connectionType = await ConnectivityService.getConnectionType();
-
-    if (!hasConnection) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No internet connection. Showing offline content.'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      }
-    } else {
-      print('✅ Connected via: $connectionType');
+      print('🔵 Notification count updated: $_notificationCount');
     }
   }
 

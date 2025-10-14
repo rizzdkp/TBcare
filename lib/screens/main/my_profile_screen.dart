@@ -4,6 +4,8 @@ import '../features/edit_profile_screen.dart';
 import '../features/settings_screen.dart';
 import '../auth/welcome_screen.dart';
 import '../../services/user_data_service.dart';
+import '../../services/api_service.dart';
+import '../../services/notification_service.dart';
 
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({super.key});
@@ -42,7 +44,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               children: [
-                // HANYA menu yang berkaitan dengan PROFILE
+                // Info User dari API
+                _buildUserInfoCard(),
+                const SizedBox(height: 16),
+
+                // Menu Profile
                 _buildMenuItem(
                   context,
                   Icons.person_outline,
@@ -126,7 +132,11 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  UserDataService.fullName,
+                  UserDataService.fullName.isNotEmpty
+                      ? UserDataService.fullName
+                      : UserDataService.userName.isNotEmpty
+                          ? UserDataService.userName
+                          : 'User',
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 22,
@@ -134,15 +144,21 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  UserDataService.phone,
-                  style: GoogleFonts.poppins(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 14,
+                if (UserDataService.getUserData()['mobileNumber1']
+                        ?.toString()
+                        .isNotEmpty ??
+                    false)
+                  Text(
+                    UserDataService.getUserData()['mobileNumber1'] ?? '',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 14,
+                    ),
                   ),
-                ),
                 Text(
-                  UserDataService.email,
+                  UserDataService.email.isNotEmpty
+                      ? UserDataService.email
+                      : 'No email',
                   style: GoogleFonts.poppins(
                     color: Colors.white.withOpacity(0.9),
                     fontSize: 14,
@@ -196,6 +212,105 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           context,
           MaterialPageRoute(builder: (_) => destination),
         ),
+      ),
+    );
+  }
+
+  Widget _buildUserInfoCard() {
+    // Ambil data langsung dari getUserData
+    final userData = UserDataService.getUserData();
+
+    // Debug print untuk melihat data yang tersedia
+    print('📋 Profile Screen - User Data:');
+    print('   userName: ${userData['userName']}');
+    print('   email: ${userData['email']}');
+    print('   fullName: ${userData['fullName']}');
+    print('   city: ${userData['city']}');
+    print('   mobileNumber1: ${userData['mobileNumber1']}');
+    print('   address1: ${userData['address1']}');
+    print('   role: ${userData['role']}');
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.info_outline,
+                    color: Color(0xFF00A8C5), size: 24),
+                const SizedBox(width: 8),
+                Text(
+                  'Informasi Pengguna',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF00A8C5),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 24),
+            // Sesuaikan dengan struktur API response
+            _buildInfoRow(
+                Icons.badge_outlined, 'Username', userData['userName'] ?? ''),
+            _buildInfoRow(
+                Icons.email_outlined, 'Email', userData['email'] ?? ''),
+            _buildInfoRow(Icons.person_outlined, 'Nama Lengkap',
+                userData['fullName'] ?? ''),
+            _buildInfoRow(Icons.phone_outlined, 'Telepon',
+                userData['mobileNumber1'] ?? ''),
+            _buildInfoRow(
+                Icons.location_city_outlined, 'Kota', userData['city'] ?? ''),
+            _buildInfoRow(
+                Icons.home_outlined, 'Alamat', userData['address1'] ?? ''),
+            _buildInfoRow(Icons.admin_panel_settings_outlined, 'Role',
+                (userData['role'] ?? 'patient').toString().toUpperCase()),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    // Skip jika value kosong
+    if (value.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: Colors.grey[600]),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -294,7 +409,17 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          // Handle Logout - Clear API token and user data
+                          await ApiService.logout();
+                          await UserDataService.logout();
+
+                          // Stop polling dan reset notification state
+                          NotificationService.stopPolling();
+                          await NotificationService.resetState();
+                          await NotificationService.clearAll();
+                          print('🔔 Notification service stopped and cleared');
+
                           Navigator.of(dialogContext).pop();
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
