@@ -168,20 +168,25 @@ class UserDataService {
       // Demographics
       if (profile['sex'] != null) _tbcareProfile['sex'] = profile['sex'];
       if (profile['age'] != null) _tbcareProfile['age'] = profile['age'];
-      if (profile['height'] != null)
+      if (profile['height'] != null) {
         _tbcareProfile['height'] = profile['height'];
-      if (profile['weight'] != null)
+      }
+      if (profile['weight'] != null) {
         _tbcareProfile['weight'] = profile['weight'];
+      }
       if (profile['bmi'] != null) _tbcareProfile['bmi'] = profile['bmi'];
-      if (profile['weightStatus'] != null)
+      if (profile['weightStatus'] != null) {
         _tbcareProfile['weightStatus'] = profile['weightStatus'];
+      }
 
       // Location from profile (overrides patient city if exists)
       if (profile['city'] != null) _userData['city'] = profile['city'];
-      if (profile['district'] != null)
+      if (profile['district'] != null) {
         _tbcareProfile['district'] = profile['district'];
-      if (profile['province'] != null)
+      }
+      if (profile['province'] != null) {
         _tbcareProfile['province'] = profile['province'];
+      }
 
       // Date of birth from profile
       if (profile['dateOfBirth'] != null) {
@@ -196,41 +201,56 @@ class UserDataService {
       }
 
       // Symptoms
-      if (profile['isCoughProductive'] != null)
+      if (profile['isCoughProductive'] != null) {
         _tbcareProfile['isCoughProductive'] = profile['isCoughProductive'];
-      if (profile['coughDurationDays'] != null)
+      }
+      if (profile['coughDurationDays'] != null) {
         _tbcareProfile['coughDurationDays'] = profile['coughDurationDays'];
-      if (profile['hasHemoptysis'] != null)
+      }
+      if (profile['hasHemoptysis'] != null) {
         _tbcareProfile['hasHemoptysis'] = profile['hasHemoptysis'];
-      if (profile['hasChestPain'] != null)
+      }
+      if (profile['hasChestPain'] != null) {
         _tbcareProfile['hasChestPain'] = profile['hasChestPain'];
-      if (profile['hasShortBreath'] != null)
+      }
+      if (profile['hasShortBreath'] != null) {
         _tbcareProfile['hasShortBreath'] = profile['hasShortBreath'];
-      if (profile['hasFever'] != null)
+      }
+      if (profile['hasFever'] != null) {
         _tbcareProfile['hasFever'] = profile['hasFever'];
-      if (profile['hasNightSweats'] != null)
+      }
+      if (profile['hasNightSweats'] != null) {
         _tbcareProfile['hasNightSweats'] = profile['hasNightSweats'];
-      if (profile['hasWeightLoss'] != null)
+      }
+      if (profile['hasWeightLoss'] != null) {
         _tbcareProfile['hasWeightLoss'] = profile['hasWeightLoss'];
-      if (profile['weightLossAmountKg'] != null)
+      }
+      if (profile['weightLossAmountKg'] != null) {
         _tbcareProfile['weightLossAmountKg'] = profile['weightLossAmountKg'];
+      }
 
       // Tobacco use
-      if (profile['tobaccoUse'] != null)
+      if (profile['tobaccoUse'] != null) {
         _tbcareProfile['tobaccoUse'] = profile['tobaccoUse'];
-      if (profile['cigarettesPerDay'] != null)
+      }
+      if (profile['cigarettesPerDay'] != null) {
         _tbcareProfile['cigarettesPerDay'] = profile['cigarettesPerDay'];
-      if (profile['smokingSinceMonths'] != null)
+      }
+      if (profile['smokingSinceMonths'] != null) {
         _tbcareProfile['smokingSinceMonths'] = profile['smokingSinceMonths'];
-      if (profile['stoppedSmokingMonths'] != null)
+      }
+      if (profile['stoppedSmokingMonths'] != null) {
         _tbcareProfile['stoppedSmokingMonths'] =
             profile['stoppedSmokingMonths'];
+      }
 
       // TB History
-      if (profile['hadPriorTB'] != null)
+      if (profile['hadPriorTB'] != null) {
         _tbcareProfile['hadPriorTB'] = profile['hadPriorTB'];
-      if (profile['comorbiditiesOther'] != null)
+      }
+      if (profile['comorbiditiesOther'] != null) {
         _tbcareProfile['comorbiditiesOther'] = profile['comorbiditiesOther'];
+      }
 
       print(
           '✅ TBCare profile synced: Age ${_tbcareProfile['age']}, Sex ${_tbcareProfile['sex']}, BMI ${_tbcareProfile['bmi']}');
