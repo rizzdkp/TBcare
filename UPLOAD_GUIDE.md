@@ -2,13 +2,14 @@
 
 ## 📦 File untuk Upload
 
-**Lokasi APK:**
+**Lokasi AAB (RELEASE SIGNED):**
 ```
-D:\PROJECT\PKM\apk\pkm\build\app\outputs\flutter-apk\app-release.apk
+D:\PROJECT\PKM\apk\pkm\build\app\outputs\bundle\release\app-release.aab
 ```
 
-**Ukuran:** 23.7 MB  
-**Tanggal Build:** 7 November 2025
+**Ukuran:** 41.76 MB  
+**Tanggal Build:** 7 November 2025, 4:18 PM  
+**Signing:** ✅ **RELEASE SIGNED** (Production Ready)
 
 ---
 
